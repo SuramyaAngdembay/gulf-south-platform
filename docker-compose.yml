@@ -1,40 +1,26 @@
 version: '3.8'
 
 services:
-  backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
+  frontend:
+    build: ./frontend
     ports:
-      - "8000:8000"
-    environment:
-      - DB_HOST=db
-      - DB_USER=gulf_south_user
-      - DB_PASSWORD=${DB_PASSWORD}
-      - DB_NAME=gulf_south_platform
-      - SECRET_KEY=${SECRET_KEY}
-      - ALGORITHM=HS256
-      - ACCESS_TOKEN_EXPIRE_MINUTES=11520
-      - BACKEND_CORS_ORIGINS=["http://localhost:5173"]
+      - "80:80"
     depends_on:
-      - db
-    volumes:
-      - ./backend:/app
+      - backend
     networks:
       - app-network
 
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
+  backend:
+    build: ./backend
     ports:
-      - "5173:5173"
+      - "8000:8000"
     environment:
-      - VITE_API_URL=http://localhost:8000/api/v1
-      - VITE_BASE_URL=/
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
+      - DATABASE_URL=mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@db:3306/${MYSQL_DATABASE}
+      - SECRET_KEY=${SECRET_KEY}
+      - ALGORITHM=HS256
+      - ACCESS_TOKEN_EXPIRE_MINUTES=30
+    depends_on:
+      - db
     networks:
       - app-network
 
@@ -43,10 +29,10 @@ services:
     ports:
       - "3306:3306"
     environment:
-      - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
-      - MYSQL_DATABASE=gulf_south_platform
-      - MYSQL_USER=gulf_south_user
-      - MYSQL_PASSWORD=${DB_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
     volumes:
       - mysql_data:/var/lib/mysql
     networks:
@@ -55,14 +41,13 @@ services:
   nginx:
     image: nginx:alpine
     ports:
-      - "80:80"
       - "443:443"
     volumes:
       - ./nginx/conf.d:/etc/nginx/conf.d
       - ./nginx/ssl:/etc/nginx/ssl
     depends_on:
-      - backend
       - frontend
+      - backend
     networks:
       - app-network
 
