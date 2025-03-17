@@ -1,0 +1,74 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - DB_HOST=db
+      - DB_USER=gulf_south_user
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=gulf_south_platform
+      - SECRET_KEY=${SECRET_KEY}
+      - ALGORITHM=HS256
+      - ACCESS_TOKEN_EXPIRE_MINUTES=11520
+      - BACKEND_CORS_ORIGINS=["http://localhost:5173"]
+    depends_on:
+      - db
+    volumes:
+      - ./backend:/app
+    networks:
+      - app-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_URL=http://localhost:8000/api/v1
+      - VITE_BASE_URL=/
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    networks:
+      - app-network
+
+  db:
+    image: mysql:8.0
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
+      - MYSQL_DATABASE=gulf_south_platform
+      - MYSQL_USER=gulf_south_user
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - app-network
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./nginx/ssl:/etc/nginx/ssl
+    depends_on:
+      - backend
+      - frontend
+    networks:
+      - app-network
+
+volumes:
+  mysql_data:
+
+networks:
+  app-network:
+    driver: bridge 

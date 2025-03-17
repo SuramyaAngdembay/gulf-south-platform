@@ -1,0 +1,56 @@
+name: gulf-south-platform
+services:
+- name: backend
+  github:
+    branch: main
+    deploy_on_push: true
+    repo: yourusername/gulf-south-platform
+  source_dir: backend
+  envs:
+  - key: DB_HOST
+    scope: RUN_TIME
+    type: SECRET
+  - key: DB_USER
+    scope: RUN_TIME
+    type: SECRET
+  - key: DB_PASSWORD
+    scope: RUN_TIME
+    type: SECRET
+  - key: DB_NAME
+    scope: RUN_TIME
+    type: SECRET
+  - key: SECRET_KEY
+    scope: RUN_TIME
+    type: SECRET
+  - key: ALGORITHM
+    value: HS256
+  - key: ACCESS_TOKEN_EXPIRE_MINUTES
+    value: "11520"
+  - key: BACKEND_CORS_ORIGINS
+    value: '["https://gulf-south-platform.ondigitalocean.app"]'
+  http_port: 8000
+  instance_count: 2
+  instance_size_slug: basic-xxs
+  run_command: uvicorn app.main:app --host 0.0.0.0 --port 8000
+
+- name: frontend
+  github:
+    branch: main
+    deploy_on_push: true
+    repo: yourusername/gulf-south-platform
+  source_dir: frontend
+  envs:
+  - key: VITE_API_URL
+    value: https://api.gulf-south-platform.ondigitalocean.app/api/v1
+  - key: VITE_BASE_URL
+    value: /
+  http_port: 5173
+  instance_count: 2
+  instance_size_slug: basic-xxs
+  run_command: npm run preview -- --host 0.0.0.0 --port 5173
+
+databases:
+- engine: MYSQL
+  name: gulf_south_platform
+  production: false
+  version: "8" 

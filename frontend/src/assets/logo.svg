@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background Circle -->
+  <circle cx="100" cy="100" r="90" fill="#F5F7FA" stroke="#409EFF" stroke-width="4"/>
+  
+  <!-- Book Shape -->
+  <path d="M60 70 L140 70 L140 130 L60 130 Z" fill="#409EFF" opacity="0.1"/>
+  <path d="M60 70 L140 70 L140 130 L60 130 Z" stroke="#409EFF" stroke-width="3" fill="none"/>
+  
+  <!-- Text Lines -->
+  <line x1="70" y1="85" x2="130" y2="85" stroke="#409EFF" stroke-width="2"/>
+  <line x1="70" y1="100" x2="130" y2="100" stroke="#409EFF" stroke-width="2"/>
+  <line x1="70" y1="115" x2="130" y2="115" stroke="#409EFF" stroke-width="2"/>
+  
+  <!-- Gulf South Map Shape (simplified) -->
+  <path d="M80 50 Q100 40 120 50 T160 50 L140 70 L120 60 L100 70 L80 60 Z" 
+        fill="#409EFF" opacity="0.2" stroke="#409EFF" stroke-width="2"/>
+</svg>
